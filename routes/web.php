@@ -19,3 +19,7 @@ Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink
 use App\Http\Controllers\ResetPasswordController;
 Route::get('reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+Route::get('/', function () {
+    return view('welcome');
+});
