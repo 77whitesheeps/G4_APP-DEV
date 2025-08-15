@@ -69,6 +69,15 @@
                                 @enderror
                             </div>
 
+                            <div class="form-group">
+                                <input type="text" name="username" value="{{ old('username') }}"
+                                    class="form-control form-control-user" placeholder="Username">
+                                @error('username')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+
                             <div class="form-group row">
                                 <div class="col-sm-6 mb-3 mb-sm-0">
                                     <input type="password" name="password" class="form-control form-control-user"
@@ -121,5 +130,39 @@
     <!-- Custom scripts for all pages-->
     <script src="{{ asset('assets/js/sb-admin-2.min.js') }}"></script>
 
+<html>
+<head>
+    <title>Register</title>
+</head>
+<body>
+    <h2>Registration Form</h2>
+
+    @if(session('success'))
+        <p style="color: green;">{{ session('success') }}</p>
+    @endif
+
+    <form action="/register" method="POST">
+        @csrf
+        <label>Name:</label>
+        <input type="text" name="name" value="{{ old('name') }}">
+        @error('name') <p style="color: red;">{{ $message }}</p> @enderror
+        <br>
+
+        <label>Email:</label>
+        <input type="email" name="email" value="{{ old('email') }}">
+        @error('email') <p style="color: red;">{{ $message }}</p> @enderror
+        <br>
+
+        <label>Password:</label>
+        <input type="password" name="password">
+        @error('password') <p style="color: red;">{{ $message }}</p> @enderror
+        <br>
+
+        <label>Confirm Password:</label>
+        <input type="password" name="password_confirmation">
+        <br><br>
+
+        <button type="submit">Register</button>
+    </form>
 </body>
 </html>

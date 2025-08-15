@@ -18,7 +18,7 @@ return [
     */
     'connections' => [
 
-        // Optional connection your groupmate added
+        //kean: added this because it wont connect properly to the effing database
         'plntomatic' => [
             'driver' => 'mysql',
             'host' => env('DB_HOST', '127.0.0.1'),
