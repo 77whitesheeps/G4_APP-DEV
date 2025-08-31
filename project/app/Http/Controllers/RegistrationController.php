@@ -28,6 +28,6 @@ class RegistrationController extends Controller
             'username' => $validated['username'],
             'password' => Hash::make($validated['password']),
         ]);
-            return redirect('/register')->with('success', 'Account created successfully!');
+            return redirect('/login')->with('success', 'Account created successfully!');
         }
 }
