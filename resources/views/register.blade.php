@@ -90,9 +90,7 @@
                             </button>
 
                             <hr>
-                            <a href="#" class="btn btn-google btn-user btn-block">
-                                <i class="fab fa-google fa-fw"></i> Register with Google
-                            </a>
+                            <a href="{{ url('auth/google') }}" class="btn btn-danger btn-block">Register with Google</a>
                         </form>
 
                         <hr>

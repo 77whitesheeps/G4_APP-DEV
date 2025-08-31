@@ -22,6 +22,12 @@
                         <h2 class="h5 text-gray-900">Login</h2>
                     </div>
 
+                    <!-- Success message -->
+                    @if(session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
                     <!-- Error message -->
                     @if(session('error'))
                         <div class="alert alert-danger">
@@ -59,7 +65,7 @@
                         <hr>
 
                         <!-- Social Logins -->
-                        <a href="#" class="btn btn-google btn-user btn-block">
+                        <a href="{{ url('auth/google') }}" class="btn btn-google btn-user btn-block">
                             <i class="fab fa-google fa-fw"></i> Login with Google
                         </a>
                     </form>
