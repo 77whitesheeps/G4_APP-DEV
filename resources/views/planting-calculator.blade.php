@@ -2,7 +2,16 @@
 
 @section('content')
 <div class="container">
-    <h1>Square Planting System Calculator</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Square Planting System Calculator</h1>
+        <!-- Temporary Logout Button -->
+        <form method="POST" action="{{ route('logout') }}" class="d-inline">
+            @csrf
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-sign-out-alt me-1"></i> Logout (Temp Button)
+            </button>
+        </form>
+    </div>
 
     @if($errors->any())
         <div class="alert alert-danger">

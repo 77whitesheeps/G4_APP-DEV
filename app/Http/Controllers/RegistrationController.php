@@ -26,3 +26,11 @@ class RegistrationController extends Controller
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
             ]);
+
+            // Log the user in after successful registration
+            auth()->login($user);
+            
+            // Redirect to the intended page or dashboard
+            return redirect()->route('planting.calculator')->with('success', 'Registration successful! Welcome!');
+        }
+    }

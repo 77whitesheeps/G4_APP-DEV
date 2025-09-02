@@ -21,17 +21,19 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
+            
+            // Redirect to the intended page after successful login
+            return redirect()->intended('/planting-calculator')->with('success', 'Login successful!');
         }
 
-        return back()->with('error', 'Invalid credentials!');
+        return back()->with('error', 'Invalid credentials!')->withInput($request->only('email'));
     }
 
     public function logout(Request $request)
     {
         Auth::logout();
-    $request->session()->flush();
+        $request->session()->flush();
         $request->session()->regenerateToken();
-        return redirect()->route('login');
+        return redirect()->route('login')->with('success', 'You have been logged out successfully!');
     }
 }
