@@ -5,33 +5,37 @@ use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\Auth\GoogleController;
-
-//Keandra acosta here, currently we are fixing the routes and pages, so everytime the web is running, 
-// it will automatically redirect to this calculator for now. We will be implementing the bootsrap designs prolly tommorrow.
-
-Route::get('/', function () {
-    return view('register');
-}); 
-
-Route::get('/register', [RegistrationController::class, 'showForm']);
-Route::post('/register', [RegistrationController::class, 'register']);
-Route::get('/login', [LoginController::class, 'showForm']);
-Route::post('/login', [LoginController::class, 'login']);
-Route::post('/logout', [LoginController::class, 'logout']);
-Route::get('/forgot-password', [ForgotPasswordController::class, 'showForm']);
-Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\PlantingCalculatorController;
+
+// Public routes
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('planting.calculator');
+    }
+    return redirect()->route('login');
+});
+
+// Authentication routes
+Route::get('/register', [RegistrationController::class, 'showForm'])->name('register');
+Route::post('/register', [RegistrationController::class, 'register']);
+Route::get('/login', [LoginController::class, 'showForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// Password reset routes
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showForm'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
 Route::get('reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
-Route::get('auth/google', [GoogleController::class, 'redirectToGoogle']);
-Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
-use App\Http\Controllers\PlantingCalculatorController;
+// Google OAuth routes
+Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.redirect');
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('google.callback');
 
-Route::get('/', function () {
-    return redirect()->route('planting.calculator');
+// Protected routes (require authentication)
+Route::middleware('auth')->group(function () {
+    Route::get('/planting-calculator', [PlantingCalculatorController::class, 'index'])->name('planting.calculator');
+    Route::post('/calculate-plants', [PlantingCalculatorController::class, 'calculate'])->name('calculate.plants');
 });
-
-Route::get('/planting-calculator', [PlantingCalculatorController::class, 'index'])->name('planting.calculator');
-Route::post('/calculate-plants', [PlantingCalculatorController::class, 'calculate'])->name('calculate.plants');
 
