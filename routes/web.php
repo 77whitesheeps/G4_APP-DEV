@@ -6,9 +6,12 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\Auth\GoogleController;
 
+//Keandra acosta here, currently we are fixing the routes and pages, so everytime the web is running, 
+// it will automatically redirect to this calculator for now. We will be implementing the bootsrap designs prolly tommorrow.
+
 Route::get('/', function () {
     return view('register');
-});
+}); 
 
 Route::get('/register', [RegistrationController::class, 'showForm']);
 Route::post('/register', [RegistrationController::class, 'register']);
