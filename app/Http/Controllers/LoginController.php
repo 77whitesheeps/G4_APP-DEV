@@ -21,7 +21,7 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/welcome');
+
         }
 
         return back()->with('error', 'Invalid credentials!');
@@ -32,6 +32,6 @@ class LoginController extends Controller
         Auth::logout();
     $request->session()->flush();
         $request->session()->regenerateToken();
-        return redirect('/login');
+        return redirect()->route('login');
     }
 }
