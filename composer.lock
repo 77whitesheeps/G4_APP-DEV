@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+
     "content-hash": "9efef1f3bba6bfe5b338e0d6a0df7251",
+
+    "content-hash": "88970a0117c062eed55fa8728fc43833",
+
     "packages": [
         {
             "name": "brick/math",
@@ -2721,6 +2725,7 @@
             "time": "2025-05-08T08:14:37+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "paragonie/constant_time_encoding",
             "version": "v3.0.0",
             "source": {
@@ -2838,6 +2843,8 @@
             "time": "2020-10-15T08:29:30+00:00"
         },
         {
+=======
+>>>>>>> square-planting-system
             "name": "phpoption/phpoption",
             "version": "1.9.3",
             "source": {
@@ -2913,6 +2920,7 @@
             "time": "2024-07-20T21:41:07+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "phpseclib/phpseclib",
             "version": "3.0.46",
             "source": {
@@ -3023,6 +3031,8 @@
             "time": "2025-06-26T16:29:55+00:00"
         },
         {
+=======
+>>>>>>> square-planting-system
             "name": "psr/clock",
             "version": "1.0.0",
             "source": {

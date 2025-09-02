@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # G4_APP-DEV
 
 To make this project work, do this step
@@ -21,6 +22,8 @@ When pulling new data run these commands to make sure nothing will go wrong with
 2. "npm install" - if there is changes in package.json
 3. "php artisan migrate" - if there is data changes in database
 =======
+=======
+>>>>>>> square-planting-system
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
@@ -82,4 +85,7 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+<<<<<<< HEAD
 >>>>>>> new_login-and-register_with_functionality_google
+=======
+>>>>>>> square-planting-system

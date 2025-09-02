@@ -1,6 +1,10 @@
 <?php
 
 return [
+<<<<<<< HEAD
+=======
+
+>>>>>>> square-planting-system
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -122,6 +126,7 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+<<<<<<< HEAD
     'providers' => [
         /*
          * Laravel Framework Service Providers...
@@ -163,4 +168,6 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
     ],
+=======
+>>>>>>> square-planting-system
 ];

@@ -1,6 +1,9 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 node_modules
 =======
+=======
+>>>>>>> square-planting-system
 *.log
 .DS_Store
 .env
@@ -25,4 +28,7 @@ node_modules
 Homestead.json
 Homestead.yaml
 Thumbs.db
+<<<<<<< HEAD
 >>>>>>> new_login-and-register_with_functionality_google
+=======
+>>>>>>> square-planting-system
