@@ -15,6 +15,9 @@ Route::get('/', function () {
     }
     return redirect()->route('login');
 });
+Route::get('/welcome', function () {
+    return view('welcome');
+});
 
 // Authentication routes
 Route::get('/register', [RegistrationController::class, 'showForm'])->name('register');
