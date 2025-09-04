@@ -1,11 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\TriangularCalculatorController;
 
-Route::get('/', function () {
-    return view('register');
-});
-
-Route::get('/register', [RegistrationController::class, 'showForm']);
-Route::post('/register', [RegistrationController::class, 'register']);
+Route::get('/triangular-planting', [TriangularCalculatorController::class, 'showForm']);
+Route::post('/triangular-planting', [TriangularCalculatorController::class, 'calculate']);
