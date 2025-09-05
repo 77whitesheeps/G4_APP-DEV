@@ -14,12 +14,12 @@
             <span class="navbar-text me-3">
                 Welcome, {{ auth()->user()->name }}!
             </span>
-            <form method="POST" action="{{ route('logout') }}" class="d-inline">
+            <!-- <form method="POST" action="{{ route('logout') }}" class="d-inline">
                 @csrf
                 <button type="submit" class="btn btn-outline-danger btn-sm">
                     Logout
                 </button>
-            </form>
+            </form> -->
         </div>
         @endauth
     </nav>
