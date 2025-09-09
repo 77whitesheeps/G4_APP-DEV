@@ -7,6 +7,7 @@ use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\PlantingCalculatorController;
+use App\Http\Controllers\PlanController;
 
 // Public routes
 Route::get('/', function () {
@@ -39,6 +40,11 @@ Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallba
 // Protected routes (require authentication)
 Route::middleware('auth')->group(function () {
     Route::get('/planting-calculator', [PlantingCalculatorController::class, 'index'])->name('planting.calculator');
+    Route::get('/calculate-plants', function () {
+        return redirect()->route('planting.calculator');
+    });
     Route::post('/calculate-plants', [PlantingCalculatorController::class, 'calculate'])->name('calculate.plants');
 });
 
+//save plan route
+Route::post('/save-plan', [PlanController::class, 'savePlan'])->name('plans.save')->middleware('auth');

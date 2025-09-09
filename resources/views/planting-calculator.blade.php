@@ -127,19 +127,26 @@
                     @if(isset($results))
                         <div class="mt-4 p-4 border rounded bg-light">
                             <h5 class="mb-3 text-success">Results</h5>
-                            <p><strong>Total Plants:</strong> {{ $results['totalPlants'] }}</p>
+                            <p><strong>Total Plants:</strong> <span id="resultTotalPlants">{{ $results['totalPlants'] }}</span></p>
                             <p><strong>Rows:</strong> {{ $results['rows'] }}</p>
                             <p><strong>Columns:</strong> {{ $results['columns'] }}</p>
                             <p><strong>Effective Planting Area:</strong>
-                                {{ $results['effectiveLength'] }} (length unit) x {{ $results['effectiveWidth'] }} (width unit)
+                                {{ $results['effectiveLength'] }} x {{ $results['effectiveWidth'] }}
                             </p>
                         </div>
-                    @endif
 
+                    <!-- save plan button to open modal-->
+                        <button type="button" class="btn btn-plant"
+                            data-bs-toggle="modal"
+                            data-bs-target="#savePlanModal"
+                            id="savePlanBtn">
+                        Save Plan
+                        </button>
+                    @endif
                 </div>
             </div>
 
-            <!-- Logout button -->
+            <!-- logout button -->
             <div class="text-center mb-5">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
@@ -152,4 +159,39 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const savePlanBtn = document.getElementById('savePlanBtn'); // button that opens modal
+    const modalSubmitBtn = document.getElementById('modalSubmitBtn'); // save button inside modal
+
+    savePlanBtn.addEventListener('click', function() {
+        // populate hidden inputs
+        document.getElementById('modalPlantSpacing').value = document.getElementById('plant_spacing').value;
+        document.getElementById('modalNumPlants').value = document.getElementById('resultTotalPlants').innerText || 0;
+        document.getElementById('modalPlantingSystem').value = 'square';
+    });
+
+    modalSubmitBtn.addEventListener('click', function() {
+        // validate inputs
+        const planName = document.getElementById('modalPlanName').value.trim();
+        const areaShape = document.getElementById('modalAreaShape').value.trim();
+        if(!planName || !areaShape) {
+            alert('Please fill in Plan Name and Area Shape.');
+            return;
+        }
+        document.getElementById('savePlanForm').submit();
+    });
+
+    // Show success modal if it exists
+    const successModal = document.getElementById('successModal');
+    if (successModal) {
+        const modal = new bootstrap.Modal(successModal);
+        modal.show();
+    }
+});
+</script>
+
+@include('save-plan')
+
 @endsection

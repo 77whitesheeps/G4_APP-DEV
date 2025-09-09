@@ -39,9 +39,9 @@ class PlantingCalculatorController extends Controller
             $plan['effectiveLength'] = $this->convertFromMeters($plan['effectiveLength'], $validated['area_length_unit']);
             $plan['effectiveWidth'] = $this->convertFromMeters($plan['effectiveWidth'], $validated['area_width_unit']);
 
+            $request->flash();
             return view('planting-calculator')->with([
-                'results' => $plan,
-                'oldInput' => $request->all()
+                'results' => $plan
             ]);
         } catch (\Exception $e) {
             return redirect()->route('planting.calculator')
