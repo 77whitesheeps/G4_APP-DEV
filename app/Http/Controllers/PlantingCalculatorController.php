@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\PlantCalculation;
 
 class PlantingCalculatorController extends Controller
 {
@@ -35,6 +36,31 @@ class PlantingCalculatorController extends Controller
         try {
             $plan = $this->calculateSquarePlanting($lengthInMeters, $widthInMeters, $spacingInMeters, $borderInMeters);
 
+            // Calculate total area in square meters
+            $totalAreaSqMeters = $lengthInMeters * $widthInMeters;
+
+            // Save calculation to database
+            PlantCalculation::create([
+                'user_id' => auth()->id(),
+                'plant_type' => $request->input('plant_type'), // We'll add this field to the form
+                'area_length' => $validated['area_length'],
+                'area_length_unit' => $validated['area_length_unit'],
+                'area_width' => $validated['area_width'],
+                'area_width_unit' => $validated['area_width_unit'],
+                'plant_spacing' => $validated['plant_spacing'],
+                'plant_spacing_unit' => $validated['plant_spacing_unit'],
+                'border_spacing' => $validated['border_spacing'] ?? 0,
+                'border_spacing_unit' => $validated['border_spacing_unit'] ?? 'm',
+                'total_plants' => $plan['totalPlants'],
+                'rows' => $plan['rows'],
+                'columns' => $plan['columns'],
+                'effective_length' => $plan['effectiveLength'],
+                'effective_width' => $plan['effectiveWidth'],
+                'total_area' => $totalAreaSqMeters,
+                'calculation_name' => $request->input('calculation_name'),
+                'notes' => $request->input('notes'),
+            ]);
+
             // Convert effective area dimensions back to the respective units of length and width inputs
             $plan['effectiveLength'] = $this->convertFromMeters($plan['effectiveLength'], $validated['area_length_unit']);
             $plan['effectiveWidth'] = $this->convertFromMeters($plan['effectiveWidth'], $validated['area_width_unit']);
@@ -42,7 +68,7 @@ class PlantingCalculatorController extends Controller
             return view('planting-calculator')->with([
                 'results' => $plan,
                 'oldInput' => $request->all()
-            ]);
+            ])->with('success', 'Calculation completed and saved successfully!');
         } catch (\Exception $e) {
             return redirect()->route('planting.calculator')
                              ->withInput()

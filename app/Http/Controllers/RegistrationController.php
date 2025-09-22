@@ -31,6 +31,6 @@ class RegistrationController extends Controller
             auth()->login($user);
             
             // Redirect to the intended page or dashboard
-            return redirect()->route('planting.calculator')->with('success', 'Registration successful! Welcome!');
+            return redirect()->route('dashboard')->with('success', 'Registration successful! Welcome!');
         }
     }

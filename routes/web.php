@@ -6,12 +6,13 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PlantingCalculatorController;
 
 // Public routes
 Route::get('/', function () {
     if (auth()->check()) {
-        return redirect()->route('planting.calculator');
+        return redirect()->route('dashboard');
     }
     return redirect()->route('login');
 });
@@ -38,6 +39,7 @@ Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallba
 
 // Protected routes (require authentication)
 Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/planting-calculator', [PlantingCalculatorController::class, 'index'])->name('planting.calculator');
     Route::post('/calculate-plants', [PlantingCalculatorController::class, 'calculate'])->name('calculate.plants');
 });

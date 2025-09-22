@@ -23,7 +23,7 @@ class LoginController extends Controller
             $request->session()->regenerate();
             
             // Redirect to the intended page after successful login
-            return redirect()->intended('/planting-calculator')->with('success', 'Login successful!');
+            return redirect()->intended('/dashboard')->with('success', 'Login successful!');
         }
 
         return back()->with('error', 'Invalid credentials!')->withInput($request->only('email'));
