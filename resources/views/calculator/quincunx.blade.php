@@ -26,6 +26,13 @@
                 </div>
                 
                 <div class="card-body">
+                    @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+
                     @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul class="mb-0">
@@ -123,6 +130,30 @@
                                         </select>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Optional Fields -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-info-circle me-2"></i>Additional Information (Optional)
+                                </h5>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="calculation_name" class="form-label">Calculation Name</label>
+                                <input type="text" class="form-control" name="calculation_name" id="calculation_name"
+                                       value="{{ old('calculation_name') }}" placeholder="e.g., Tomato Field A">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="plant_type" class="form-label">Plant Type</label>
+                                <input type="text" class="form-control" name="plant_type" id="plant_type"
+                                       value="{{ old('plant_type') }}" placeholder="e.g., Tomato, Lettuce, Corn">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="notes" class="form-label">Notes</label>
+                                <textarea class="form-control" name="notes" id="notes" rows="1" 
+                                          placeholder="Optional notes">{{ old('notes') }}</textarea>
                             </div>
                         </div>
                         
