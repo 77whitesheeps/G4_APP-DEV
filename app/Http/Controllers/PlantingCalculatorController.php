@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class SquareCalculatorController extends Controller
+class PlantingCalculatorController extends Controller
 {
     /**
      * Display the square planting calculator form.
@@ -13,11 +13,11 @@ class SquareCalculatorController extends Controller
      */
     public function index()
     {
-        return view('square-calculator');
+        return view('planting-calculator');
     }
 
     /**
-     * Process the calculation (if you want server-side processing too)
+     * Process the calculation
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse

@@ -51,6 +51,6 @@ Route::middleware('auth')->group(function () {
     
     // Triangular Calculator routes
     Route::get('/triangular-calculator', [TriangularCalculatorController::class, 'index'])->name('triangular.calculator');
-    Route::post('/calculate-triangular', [TriangularCalculatorController::class, 'calculate'])->name('calculate.triangular');
+Route::post('/triangular-calculator/calculate', [TriangularCalculatorController::class, 'calculate'])->name('triangle.calculate');
 });
 

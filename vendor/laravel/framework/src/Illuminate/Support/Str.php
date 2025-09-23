@@ -4,7 +4,6 @@ namespace Illuminate\Support;
 
 use Closure;
 use Illuminate\Support\Traits\Macroable;
-use JsonException;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\Extension\InlinesOnly\InlinesOnlyExtension;
@@ -35,42 +34,42 @@ class Str
     /**
      * The cache of snake-cased words.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected static $snakeCache = [];
 
     /**
      * The cache of camel-cased words.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected static $camelCache = [];
 
     /**
      * The cache of studly-cased words.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected static $studlyCache = [];
 
     /**
      * The callback that should be used to generate UUIDs.
      *
-     * @var callable|null
+     * @var (callable(): \Ramsey\Uuid\UuidInterface)|null
      */
     protected static $uuidFactory;
 
     /**
      * The callback that should be used to generate ULIDs.
      *
-     * @var callable|null
+     * @var (callable(): \Symfony\Component\Uid\Ulid)|null
      */
     protected static $ulidFactory;
 
     /**
      * The callback that should be used to generate random strings.
      *
-     * @var callable|null
+     * @var (callable(int): string)|null
      */
     protected static $randomStringFactory;
 
@@ -577,17 +576,7 @@ class Str
             return false;
         }
 
-        if (function_exists('json_validate')) {
-            return json_validate($value, 512);
-        }
-
-        try {
-            json_decode($value, true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException) {
-            return false;
-        }
-
-        return true;
+        return json_validate($value, 512);
     }
 
     /**
@@ -937,17 +926,7 @@ class Str
      */
     public static function padBoth($value, $length, $pad = ' ')
     {
-        if (function_exists('mb_str_pad')) {
-            return mb_str_pad($value, $length, $pad, STR_PAD_BOTH);
-        }
-
-        $short = max(0, $length - mb_strlen($value));
-        $shortLeft = floor($short / 2);
-        $shortRight = ceil($short / 2);
-
-        return mb_substr(str_repeat($pad, $shortLeft), 0, $shortLeft).
-               $value.
-               mb_substr(str_repeat($pad, $shortRight), 0, $shortRight);
+        return mb_str_pad($value, $length, $pad, STR_PAD_BOTH);
     }
 
     /**
@@ -960,13 +939,7 @@ class Str
      */
     public static function padLeft($value, $length, $pad = ' ')
     {
-        if (function_exists('mb_str_pad')) {
-            return mb_str_pad($value, $length, $pad, STR_PAD_LEFT);
-        }
-
-        $short = max(0, $length - mb_strlen($value));
-
-        return mb_substr(str_repeat($pad, $short), 0, $short).$value;
+        return mb_str_pad($value, $length, $pad, STR_PAD_LEFT);
     }
 
     /**
@@ -979,13 +952,7 @@ class Str
      */
     public static function padRight($value, $length, $pad = ' ')
     {
-        if (function_exists('mb_str_pad')) {
-            return mb_str_pad($value, $length, $pad, STR_PAD_RIGHT);
-        }
-
-        $short = max(0, $length - mb_strlen($value));
-
-        return $value.mb_substr(str_repeat($pad, $short), 0, $short);
+        return mb_str_pad($value, $length, $pad, STR_PAD_RIGHT);
     }
 
     /**
@@ -1016,11 +983,12 @@ class Str
      *
      * @param  string  $value
      * @param  int|array|\Countable  $count
+     * @param  bool  $prependCount
      * @return string
      */
-    public static function plural($value, $count = 2)
+    public static function plural($value, $count = 2, $prependCount = false)
     {
-        return Pluralizer::plural($value, $count);
+        return ($prependCount ? Number::format($count).' ' : '').Pluralizer::plural($value, $count);
     }
 
     /**
@@ -1491,8 +1459,9 @@ class Str
         $endPunctuation = ['.', '!', '?', ':', '—', ','];
 
         $words = mb_split('\s+', $value);
+        $wordCount = count($words);
 
-        for ($i = 0; $i < count($words); $i++) {
+        for ($i = 0; $i < $wordCount; $i++) {
             $lowercaseWord = mb_strtolower($words[$i]);
 
             if (str_contains($lowercaseWord, '-')) {

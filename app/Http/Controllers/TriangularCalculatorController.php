@@ -3,155 +3,100 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\PlantCalculation;
 
 class TriangularCalculatorController extends Controller
 {
     public function index()
     {
-        return view('triangular-calculator');
+        return view('triangular-calculator', [
+            'results' => null,
+            'inputs' => [
+                'areaLength'   => '',
+                'areaWidth'    => '',
+                'plantSpacing' => '',
+                'borderSpacing'=> '0',
+                'lengthUnit'   => 'm',
+                'widthUnit'    => 'm',
+                'spacingUnit'  => 'm',
+                'borderUnit'   => 'm',
+            ]
+        ]);
     }
 
     public function calculate(Request $request)
     {
-        // Validate inputs
+        // Validate the input
         $validated = $request->validate([
-            'area_length' => 'required|numeric|min:0.01',
-            'area_length_unit' => 'required|in:cm,m,ft',
-            'area_width' => 'required|numeric|min:0.01',
-            'area_width_unit' => 'required|in:cm,m,ft',
-            'plant_spacing' => 'required|numeric|min:0.01',
-            'plant_spacing_unit' => 'required|in:cm,m,ft',
-            'border_spacing' => 'nullable|numeric|min:0',
-            'border_spacing_unit' => 'nullable|in:cm,m,ft',
-            'plant_type' => 'nullable|string|max:255',
-            'calculation_name' => 'nullable|string|max:255',
-            'notes' => 'nullable|string|max:1000'
+            'areaLength' => 'required|numeric|min:0.01',
+            'areaWidth' => 'required|numeric|min:0.01',
+            'plantSpacing' => 'required|numeric|min:0.01',
+            'borderSpacing' => 'required|numeric|min:0',
+            'lengthUnit' => 'required|in:m,ft,cm,in',
+            'widthUnit' => 'required|in:m,ft,cm,in',
+            'spacingUnit' => 'required|in:m,ft,cm,in',
+            'borderUnit' => 'required|in:m,ft,cm,in',
         ]);
 
-        // Convert all inputs to meters
-        $lengthInMeters = $this->convertToMeters($validated['area_length'], $validated['area_length_unit']);
-        $widthInMeters = $this->convertToMeters($validated['area_width'], $validated['area_width_unit']);
-        $spacingInMeters = $this->convertToMeters($validated['plant_spacing'], $validated['plant_spacing_unit']);
-        $borderInMeters = isset($validated['border_spacing']) && isset($validated['border_spacing_unit']) ? 
-                            $this->convertToMeters($validated['border_spacing'], $validated['border_spacing_unit']) : 0;
-
         try {
-            $plan = $this->calculateTriangularPlanting($lengthInMeters, $widthInMeters, $spacingInMeters, $borderInMeters);
+            // Convert all to meters for calculation
+            $conversionRates = [
+                'm' => 1,
+                'ft' => 0.3048,
+                'cm' => 0.01,
+                'in' => 0.0254
+            ];
 
-            // Calculate total area in square meters
-            $totalAreaSqMeters = $lengthInMeters * $widthInMeters;
+            $lengthM = $validated['areaLength'] * $conversionRates[$validated['lengthUnit']];
+            $widthM = $validated['areaWidth'] * $conversionRates[$validated['widthUnit']];
+            $plantSpacingM = $validated['plantSpacing'] * $conversionRates[$validated['spacingUnit']];
+            $borderSpacingM = $validated['borderSpacing'] * $conversionRates[$validated['borderUnit']];
+            
+            // Calculate the recommended minimum border spacing (half of plant spacing)
+            $recommendedBorderSpacingM = $plantSpacingM / 2;
 
-            // Save calculation to database
-            PlantCalculation::create([
-                'user_id' => auth()->id(),
-                'plant_type' => $validated['plant_type'] ?? 'Unknown',
-                'area_length' => $validated['area_length'],
-                'area_length_unit' => $validated['area_length_unit'],
-                'area_width' => $validated['area_width'],
-                'area_width_unit' => $validated['area_width_unit'],
-                'plant_spacing' => $validated['plant_spacing'],
-                'plant_spacing_unit' => $validated['plant_spacing_unit'],
-                'border_spacing' => $validated['border_spacing'] ?? 0,
-                'border_spacing_unit' => $validated['border_spacing_unit'] ?? 'm',
-                'total_plants' => $plan['totalPlants'],
-                'rows' => $plan['rows'],
-                'columns' => $plan['averagePlantsPerRow'],
-                'effective_length' => $plan['effectiveLength'],
-                'effective_width' => $plan['effectiveWidth'],
-                'total_area' => $totalAreaSqMeters,
-                'calculation_name' => $validated['calculation_name'] ?? 'Triangular Planting',
-                'notes' => $validated['notes'],
+            // Use the greater of the user's border input or the recommended value
+            $effectiveBorderSpacingM = max($borderSpacingM, $recommendedBorderSpacingM);
+
+            // Calculate effective planting area using the effective border spacing
+            $effectiveLength = max(0, $lengthM - 2 * $effectiveBorderSpacingM);
+            $effectiveWidth = max(0, $widthM - 2 * $effectiveBorderSpacingM);
+
+            if ($effectiveLength <= 0 || $effectiveWidth <= 0 || $plantSpacingM <= 0) {
+                return back()->withErrors([
+                    'border_spacing' => 'Invalid input values. Please check your measurements. A minimum border of ' . round($recommendedBorderSpacingM, 2) . ' m is recommended.'
+                ])->withInput();
+            }
+
+            // Calculate number of plants using triangular pattern
+            $plantsPerRow = floor($effectiveLength / $plantSpacingM) + 1;
+            $numberOfRows = floor($effectiveWidth / ($plantSpacingM * 0.866)) + 1; // 0.866 = sqrt(3)/2
+            $totalPlants = $plantsPerRow * $numberOfRows;
+
+            // Calculate additional metrics
+            $effectiveArea = $effectiveLength * $effectiveWidth;
+            $plantingDensity = $totalPlants / $effectiveArea;
+            
+            // For triangular spacing, each plant occupies 0.866 * spacing^2 area
+            $spaceUtilization = ($totalPlants * 0.866 * pow($plantSpacingM, 2)) / $effectiveArea * 100;
+
+            // Prepare results
+            $results = [
+                'totalPlants' => $totalPlants,
+                'plantsPerRow' => $plantsPerRow,
+                'numberOfRows' => $numberOfRows,
+                'effectiveArea' => $effectiveArea,
+                'plantingDensity' => $plantingDensity,
+                'spaceUtilization' => $spaceUtilization,
+                'recommendedBorderSpacingM' => round($recommendedBorderSpacingM, 2)
+            ];
+
+            return view('triangular-calculator', [
+                'results' => $results,
+                'inputs' => $validated
             ]);
-
-            // Convert effective area dimensions back to original units
-            $plan['effectiveLength'] = $this->convertFromMeters($plan['effectiveLength'], $validated['area_length_unit']);
-            $plan['effectiveWidth'] = $this->convertFromMeters($plan['effectiveWidth'], $validated['area_width_unit']);
-
-            return view('triangular-calculator')->with([
-                'results' => $plan,
-                'oldInput' => $request->all()
-            ])->with('success', 'Triangular planting calculation completed and saved successfully!');
+            
         } catch (\Exception $e) {
-            return redirect()->route('triangular.calculator')
-                             ->withInput()
-                             ->withErrors(['error' => $e->getMessage()]);
-        }
-    }
-
-    private function calculateTriangularPlanting($length, $width, $spacing, $border = 0)
-    {
-        $effectiveLength = $length - (2 * $border);
-        $effectiveWidth = $width - (2 * $border);
-
-        if ($effectiveLength <= 0 || $effectiveWidth <= 0) {
-            throw new \Exception("The border spacing is too large for the given area.");
-        }
-
-        if ($spacing > $effectiveLength || $spacing > $effectiveWidth) {
-            throw new \Exception("Plant spacing is too large for the effective area.");
-        }
-
-        // For triangular (hexagonal) packing, rows are offset
-        // Row height in triangular pattern = spacing * sqrt(3)/2
-        $rowHeight = $spacing * sqrt(3) / 2;
-        
-        // Calculate number of rows
-        $rows = floor($effectiveWidth / $rowHeight) + 1;
-        
-        // Calculate plants per row (alternating between full and offset rows)
-        $plantsPerFullRow = floor($effectiveLength / $spacing) + 1;
-        $plantsPerOffsetRow = floor(($effectiveLength - $spacing/2) / $spacing) + 1;
-        
-        // Ensure offset row doesn't have more plants than effective space allows
-        if ($plantsPerOffsetRow < 0) {
-            $plantsPerOffsetRow = 0;
-        }
-        
-        // Calculate total plants considering alternating pattern
-        $fullRows = ceil($rows / 2);
-        $offsetRows = floor($rows / 2);
-        
-        $totalPlants = ($fullRows * $plantsPerFullRow) + ($offsetRows * $plantsPerOffsetRow);
-        
-        // Calculate average plants per row for display
-        $averagePlantsPerRow = $rows > 0 ? round($totalPlants / $rows, 1) : 0;
-        
-        // Calculate space efficiency compared to square planting
-        $squarePlants = (floor($effectiveLength / $spacing) + 1) * (floor($effectiveWidth / $spacing) + 1);
-        $efficiency = $squarePlants > 0 ? round(($totalPlants / $squarePlants) * 100, 1) : 0;
-
-        return [
-            'totalPlants' => $totalPlants,
-            'rows' => $rows,
-            'plantsPerFullRow' => $plantsPerFullRow,
-            'plantsPerOffsetRow' => $plantsPerOffsetRow,
-            'averagePlantsPerRow' => $averagePlantsPerRow,
-            'effectiveLength' => $effectiveLength,
-            'effectiveWidth' => $effectiveWidth,
-            'rowHeight' => $rowHeight,
-            'spaceEfficiency' => $efficiency,
-            'spacingSaved' => $squarePlants > 0 ? $totalPlants - $squarePlants : 0
-        ];
-    }
-
-    private function convertToMeters($value, $unit)
-    {
-        switch ($unit) {
-            case 'cm': return $value / 100;
-            case 'm': return $value;
-            case 'ft': return $value * 0.3048;
-            default: throw new \Exception("Invalid unit: $unit");
-        }
-    }
-
-    private function convertFromMeters($value, $unit)
-    {
-        switch ($unit) {
-            case 'cm': return round($value * 100, 2);
-            case 'm': return round($value, 2);
-            case 'ft': return round($value / 0.3048, 2);
-            default: return round($value, 2);
+            return back()->withErrors('An error occurred during calculation. Please check your inputs.')->withInput();
         }
     }
 }
