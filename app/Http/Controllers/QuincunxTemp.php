@@ -5,28 +5,25 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PlantCalculation;
 
-class TriangularCalculatorController extends Controller
+class PlantingCalculatorController extends Controller
 {
     public function index()
     {
-        return view('triangular-calculator');
+        return view('planting-calculator');
     }
 
     public function calculate(Request $request)
     {
-        // Validate inputs
+        // Validate inputs including units per field
         $validated = $request->validate([
             'area_length' => 'required|numeric|min:0.01',
-            'area_length_unit' => 'required|in:cm,m,ft',
+            'area_length_unit' => 'required|in:cm,m,ft,hectare,acre',
             'area_width' => 'required|numeric|min:0.01',
-            'area_width_unit' => 'required|in:cm,m,ft',
+            'area_width_unit' => 'required|in:cm,m,ft,hectare,acre',
             'plant_spacing' => 'required|numeric|min:0.01',
             'plant_spacing_unit' => 'required|in:cm,m,ft',
             'border_spacing' => 'nullable|numeric|min:0',
-            'border_spacing_unit' => 'nullable|in:cm,m,ft',
-            'plant_type' => 'nullable|string|max:255',
-            'calculation_name' => 'nullable|string|max:255',
-            'notes' => 'nullable|string|max:1000'
+            'border_spacing_unit' => 'nullable|in:cm,m,ft'
         ]);
 
         // Convert all inputs to meters
@@ -37,7 +34,7 @@ class TriangularCalculatorController extends Controller
                             $this->convertToMeters($validated['border_spacing'], $validated['border_spacing_unit']) : 0;
 
         try {
-            $plan = $this->calculateTriangularPlanting($lengthInMeters, $widthInMeters, $spacingInMeters, $borderInMeters);
+            $plan = $this->calculateSquarePlanting($lengthInMeters, $widthInMeters, $spacingInMeters, $borderInMeters);
 
             // Calculate total area in square meters
             $totalAreaSqMeters = $lengthInMeters * $widthInMeters;
@@ -45,7 +42,7 @@ class TriangularCalculatorController extends Controller
             // Save calculation to database
             PlantCalculation::create([
                 'user_id' => auth()->id(),
-                'plant_type' => $validated['plant_type'] ?? 'Unknown',
+                'plant_type' => $request->input('plant_type'), // We'll add this field to the form
                 'area_length' => $validated['area_length'],
                 'area_length_unit' => $validated['area_length_unit'],
                 'area_width' => $validated['area_width'],
@@ -56,30 +53,30 @@ class TriangularCalculatorController extends Controller
                 'border_spacing_unit' => $validated['border_spacing_unit'] ?? 'm',
                 'total_plants' => $plan['totalPlants'],
                 'rows' => $plan['rows'],
-                'columns' => $plan['averagePlantsPerRow'],
+                'columns' => $plan['columns'],
                 'effective_length' => $plan['effectiveLength'],
                 'effective_width' => $plan['effectiveWidth'],
                 'total_area' => $totalAreaSqMeters,
-                'calculation_name' => $validated['calculation_name'] ?? 'Triangular Planting',
-                'notes' => $validated['notes'],
+                'calculation_name' => $request->input('calculation_name'),
+                'notes' => $request->input('notes'),
             ]);
 
-            // Convert effective area dimensions back to original units
+            // Convert effective area dimensions back to the respective units of length and width inputs
             $plan['effectiveLength'] = $this->convertFromMeters($plan['effectiveLength'], $validated['area_length_unit']);
             $plan['effectiveWidth'] = $this->convertFromMeters($plan['effectiveWidth'], $validated['area_width_unit']);
 
-            return view('triangular-calculator')->with([
+            return view('planting-calculator')->with([
                 'results' => $plan,
                 'oldInput' => $request->all()
-            ])->with('success', 'Triangular planting calculation completed and saved successfully!');
+            ])->with('success', 'Calculation completed and saved successfully!');
         } catch (\Exception $e) {
-            return redirect()->route('triangular.calculator')
+            return redirect()->route('planting.calculator')
                              ->withInput()
                              ->withErrors(['error' => $e->getMessage()]);
         }
     }
 
-    private function calculateTriangularPlanting($length, $width, $spacing, $border = 0)
+    private function calculateSquarePlanting($length, $width, $spacing, $border = 0)
     {
         $effectiveLength = $length - (2 * $border);
         $effectiveWidth = $width - (2 * $border);
@@ -92,46 +89,16 @@ class TriangularCalculatorController extends Controller
             throw new \Exception("Plant spacing is too large for the effective area.");
         }
 
-        // For triangular (hexagonal) packing, rows are offset
-        // Row height in triangular pattern = spacing * sqrt(3)/2
-        $rowHeight = $spacing * sqrt(3) / 2;
-        
-        // Calculate number of rows
-        $rows = floor($effectiveWidth / $rowHeight) + 1;
-        
-        // Calculate plants per row (alternating between full and offset rows)
-        $plantsPerFullRow = floor($effectiveLength / $spacing) + 1;
-        $plantsPerOffsetRow = floor(($effectiveLength - $spacing/2) / $spacing) + 1;
-        
-        // Ensure offset row doesn't have more plants than effective space allows
-        if ($plantsPerOffsetRow < 0) {
-            $plantsPerOffsetRow = 0;
-        }
-        
-        // Calculate total plants considering alternating pattern
-        $fullRows = ceil($rows / 2);
-        $offsetRows = floor($rows / 2);
-        
-        $totalPlants = ($fullRows * $plantsPerFullRow) + ($offsetRows * $plantsPerOffsetRow);
-        
-        // Calculate average plants per row for display
-        $averagePlantsPerRow = $rows > 0 ? round($totalPlants / $rows, 1) : 0;
-        
-        // Calculate space efficiency compared to square planting
-        $squarePlants = (floor($effectiveLength / $spacing) + 1) * (floor($effectiveWidth / $spacing) + 1);
-        $efficiency = $squarePlants > 0 ? round(($totalPlants / $squarePlants) * 100, 1) : 0;
+        $plantsPerRow = floor($effectiveLength / $spacing) + 1;
+        $plantsPerCol = floor($effectiveWidth / $spacing) + 1;
+        $totalPlants = $plantsPerRow * $plantsPerCol;
 
         return [
             'totalPlants' => $totalPlants,
-            'rows' => $rows,
-            'plantsPerFullRow' => $plantsPerFullRow,
-            'plantsPerOffsetRow' => $plantsPerOffsetRow,
-            'averagePlantsPerRow' => $averagePlantsPerRow,
+            'rows' => $plantsPerCol,
+            'columns' => $plantsPerRow,
             'effectiveLength' => $effectiveLength,
-            'effectiveWidth' => $effectiveWidth,
-            'rowHeight' => $rowHeight,
-            'spaceEfficiency' => $efficiency,
-            'spacingSaved' => $squarePlants > 0 ? $totalPlants - $squarePlants : 0
+            'effectiveWidth' => $effectiveWidth
         ];
     }
 
@@ -141,7 +108,9 @@ class TriangularCalculatorController extends Controller
             case 'cm': return $value / 100;
             case 'm': return $value;
             case 'ft': return $value * 0.3048;
-            default: throw new \Exception("Invalid unit: $unit");
+            case 'hectare': return sqrt($value * 10000);
+            case 'acre': return sqrt($value * 4046.86);
+            default: throw new \Exception("Invalid unit");
         }
     }
 
@@ -151,7 +120,9 @@ class TriangularCalculatorController extends Controller
             case 'cm': return round($value * 100, 2);
             case 'm': return round($value, 2);
             case 'ft': return round($value / 0.3048, 2);
-            default: return round($value, 2);
+            case 'hectare': return round(pow($value, 2) / 10000, 4);
+            case 'acre': return round(pow($value, 2) / 4046.86, 4);
+            default: return $value;
         }
     }
 }
