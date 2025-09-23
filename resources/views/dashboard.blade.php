@@ -92,20 +92,32 @@
                             <div class="d-grid">
                                 <a href="{{ route('planting.calculator') }}" class="btn btn-plant btn-lg">
                                     <i class="fas fa-calculator me-2"></i>
-                                    <div>New Calculation</div>
-                                    <small>Calculate plant spacing</small>
+                                    <div>Square Planting</div>
+                                    <small>Standard grid calculator</small>
                                 </a>
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
                             <div class="d-grid">
-                                <button class="btn btn-outline-success btn-lg">
-                                    <i class="fas fa-plus-circle me-2"></i>
-                                    <div>Add Plant</div>
-                                    <small>Add new plant type</small>
-                                </button>
+                                <a href="{{ route('quincunx.calculator') }}" class="btn btn-success btn-lg">
+                                    <i class="fas fa-th-large me-2"></i>
+                                    <div>Quincunx Planting</div>
+                                    <small>Optimized spacing pattern</small>
+                                </a>
                             </div>
                         </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-grid">
+                                <a href="{{ route('triangular.calculator') }}" class="btn btn-info btn-lg">
+                                    <i class="fas fa-play me-2"></i>
+                                    <div>Triangular Planting</div>
+                                    <small>Hexagonal pattern layout</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
                         <div class="col-md-4 mb-3">
                             <div class="d-grid">
                                 <button class="btn btn-outline-info btn-lg">
@@ -115,9 +127,6 @@
                                 </button>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="row">
                         <div class="col-md-4 mb-3">
                             <div class="d-grid">
                                 <button class="btn btn-outline-primary btn-lg">

@@ -8,6 +8,8 @@ use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PlantingCalculatorController;
+use App\Http\Controllers\QuincunxCalculatorController;
+use App\Http\Controllers\TriangularCalculatorController;
 
 // Public routes
 Route::get('/', function () {
@@ -42,5 +44,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/planting-calculator', [PlantingCalculatorController::class, 'index'])->name('planting.calculator');
     Route::post('/calculate-plants', [PlantingCalculatorController::class, 'calculate'])->name('calculate.plants');
+    
+    // Quincunx Calculator routes
+    Route::get('/quincunx-calculator', [QuincunxCalculatorController::class, 'index'])->name('quincunx.calculator');
+    Route::post('/calculate-quincunx', [QuincunxCalculatorController::class, 'calculate'])->name('calculate.quincunx');
+    
+    // Triangular Calculator routes
+    Route::get('/triangular-calculator', [TriangularCalculatorController::class, 'index'])->name('triangular.calculator');
+    Route::post('/calculate-triangular', [TriangularCalculatorController::class, 'calculate'])->name('calculate.triangular');
 });
 
