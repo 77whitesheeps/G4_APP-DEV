@@ -6,211 +6,220 @@
     <title>Triangular Planting Calculator</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #2e7d32; /* Darker green */
-            --secondary-color: #4caf50; /* A shade of green */
-            --accent-color: #388e3c; /* A slightly darker accent green */
-            --dark-color: #1b5e20; /* Very dark green */
-            --light-color: #e8f5e9; /* Light green for backgrounds */
-            --plant-color: #66bb6a;
-            --plant-alt-color: #a5d6a7;
-        }
         body {
             background-color: #f8f9fa;
-            color: #333;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
         }
         
         .calculator-container {
-            background-color: white;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            margin: 2rem auto;
-            padding: 2rem;
-            max-width: 1000px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-top: 20px;
+            margin-bottom: 20px;
         }
         
-        .header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-        }
-        
-        .form-label {
-            font-weight: 500;
-            color: var(--dark-color);
-        }
-        
-        .input-group {
-            margin-bottom: 1.2rem;
+        header {
+            border-bottom: 1px solid #eaeaea;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
         }
         
         .btn-calculate {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-            padding: 0.5rem 2rem;
-            font-weight: 600;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 30px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
         }
         
         .btn-calculate:hover {
-            background-color: var(--dark-color);
-            border-color: var(--dark-color);
+            background-color: #218838;
+        }
+        
+        .btn-dashboard {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-dashboard:hover {
+            background-color: #5a6268;
+            color: white;
         }
         
         .results-container {
-            background-color: var(--light-color);
+            background-color: #f1f8e9;
             border-radius: 8px;
-            padding: 1.5rem;
-            margin-top: 2rem;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         
         .result-value {
             font-weight: bold;
-            color: var(--primary-color);
-            font-size: 1.2rem;
+            color: #2e7d32;
         }
         
         .visualization-container {
-            background-color: white;
+            margin-top: 30px;
+            border: 1px solid #e0e0e0;
             border-radius: 8px;
-            padding: 1.5rem;
-            margin-top: 2rem;
-            border: 1px solid #ddd;
-        }
-        
-        .visualization {
-            height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: auto;
-            position: relative;
-        }
-        
-        .plant {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background-color: var(--plant-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 0.7rem;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.2);
-            transform: translate(-50%, -50%);
-            z-index: 2;
-        }
-        
-        .plant.alternating {
-            background-color: var(--plant-alt-color);
-        }
-        
-        .planting-area {
-            position: relative;
-            border: 2px dashed #ccc;
-            background-color: #f9f9f9;
-        }
-        
-        .info-icon {
-            color: var(--primary-color);
-            cursor: pointer;
-            margin-left: 5px;
-        }
-        
-        footer {
-            text-align: center;
-            margin-top: 2rem;
-            padding: 1rem;
-            color: #6c757d;
-        }
-        
-        .pattern-info {
-            background-color: #f8f9fa;
-            border-left: 4px solid var(--primary-color);
-            padding: 1rem;
-            margin-top: 1rem;
-            border-radius: 0 4px 4px 0;
+            padding: 15px;
+            background-color: #fafafa;
         }
         
         .controls {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 1rem;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .zoom-controls button {
+            margin-left: 5px;
+            padding: 5px 10px;
             background-color: #e9ecef;
             border: 1px solid #ced4da;
-            padding: 0.25rem 0.5rem;
-            margin-left: 0.5rem;
             border-radius: 4px;
             cursor: pointer;
         }
         
-        @media (max-width: 768px) {
-            .calculator-container {
-                padding: 1rem;
-                margin: 1rem;
-            }
-            
-            .visualization {
-                height: 300px;
-            }
-            
-            .plant {
-                width: 20px;
-                height: 20px;
-                font-size: 0.6rem;
-            }
+        .visualization {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            border: 1px solid #ddd;
+            background-color: #f0f8f0;
+            overflow: hidden;
+            cursor: grab;
+        }
+        
+        .planting-area {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: center;
+            transition: transform 0.2s;
+        }
+        
+        .plant {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background-color: #4caf50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .plant.alternating {
+            background-color: #388e3c;
+        }
+        
+        .row-label, .col-label {
+            position: absolute;
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .row-label {
+            left: -40px;
+            transform: translateY(-50%);
+        }
+        
+        .col-label {
+            top: -25px;
+            transform: translateX(-50%);
         }
         
         .triangle-connectors {
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
             pointer-events: none;
-            z-index: 1;
         }
         
         .connector {
-            stroke: rgba(76, 175, 80, 0.3);
+            stroke: #81c784;
             stroke-width: 1;
-            fill: none;
+            stroke-dasharray: 3,3;
         }
         
-        .row-label {
-            position: absolute;
-            left: -30px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.8rem;
-            color: #666;
+        .pattern-info {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
         }
         
-        .col-label {
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.8rem;
-            color: #666;
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .zoom-controls {
+                margin-top: 10px;
+            }
+            
+            .visualization {
+                height: 300px;
+            }
+            
+            .header-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container calculator-container">
-        <div class="header text-center">
-            <h1>Triangular Planting System Calculator</h1>
-            <p class="mb-0">Optimize your planting layout with triangular spacing pattern</p>
-        </div>
+        <header class="bg-white shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="text-2xl font-bold text-green-700">🌱 Triangular Planting Calculator</h1>
+                    <div class="d-flex gap-3 header-buttons">
+                        <button onclick="resetForm()" class="btn btn-outline-secondary">
+                            Reset
+                        </button>
+                        <button onclick="goToDashboard()" class="btn-dashboard">
+                          <a href="{{ route('dashboard') }}"
+                            class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-200">
+                                ← Back to Dashboard
+                          </a>
+
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
         
         <form id="triangleForm">
             <div class="row">
@@ -390,7 +399,8 @@
                 const borderUnit = document.getElementById('borderUnit').value;
                 
                 // Validate inputs
-                if (areaLength <= 0 || areaWidth <= 0 || plantSpacing <= 0 || borderSpacing < 0) {
+                if (isNaN(areaLength) || isNaN(areaWidth) || isNaN(plantSpacing) || isNaN(borderSpacing) ||
+                    areaLength <= 0 || areaWidth <= 0 || plantSpacing <= 0 || borderSpacing < 0) {
                     alert('Please enter valid positive values for all fields.');
                     return;
                 }
@@ -445,28 +455,25 @@
                 const visualization = document.getElementById('visualization');
                 visualization.innerHTML = '';
                 
-                // Create SVG for connectors
-                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                svg.classList.add('triangle-connectors');
-                svg.setAttribute('width', '100%');
-                svg.setAttribute('height', '100%');
-                visualization.appendChild(svg);
-                
                 // Create planting area container
                 const plantingArea = document.createElement('div');
                 plantingArea.classList.add('planting-area');
                 visualization.appendChild(plantingArea);
                 
+                // Create SVG for connectors
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.classList.add('triangle-connectors');
+                svg.setAttribute('width', '100%');
+                svg.setAttribute('height', '100%');
+                plantingArea.appendChild(svg);
+                
                 // Calculate scale to fit visualization
-                const containerWidth = visualization.clientWidth - 60; // Account for labels
-                const containerHeight = visualization.clientHeight - 60;
+                const containerWidth = visualization.clientWidth;
+                const containerHeight = visualization.clientHeight;
                 
                 const scaleX = containerWidth / areaLength;
                 const scaleY = containerHeight / areaWidth;
-                const scale = Math.min(scaleX, scaleY) * 0.9; // 90% to add some padding
-                
-                plantingArea.style.width = (areaLength * scale) + 'px';
-                plantingArea.style.height = (areaWidth * scale) + 'px';
+                const scale = Math.min(scaleX, scaleY) * 0.8; // 80% to add some padding
                 
                 // Create plants
                 const plants = [];
@@ -478,7 +485,7 @@
                     for (let col = 0; col < plantsPerRow; col++) {
                         const plant = document.createElement('div');
                         plant.classList.add('plant');
-                        if (col % 2 === 0) plant.classList.add('alternating');
+                        if ((row + col) % 2 === 0) plant.classList.add('alternating');
                         
                         plant.textContent = (row * plantsPerRow + col + 1);
                         
@@ -493,6 +500,13 @@
                         plants.push({x: x, y: y, element: plant, row: row, col: col});
                     }
                 }
+                
+                // Set planting area dimensions
+                plantingArea.style.width = (areaLength * scale) + 'px';
+                plantingArea.style.height = (areaWidth * scale) + 'px';
+                
+                // Center the planting area
+                plantingArea.style.transform = `translate(${-areaLength * scale / 2}px, ${-areaWidth * scale / 2}px)`;
                 
                 // Create row and column labels
                 createLabels(plantingArea, plantsPerRow, numberOfRows, plantSpacing, rowSpacing, scale);
@@ -578,11 +592,10 @@
                 const svg = document.querySelector('.triangle-connectors');
                 if (svg) {
                     const plants = Array.from(document.querySelectorAll('.plant')).map(plant => {
-                        const rect = plant.getBoundingClientRect();
-                        const containerRect = document.getElementById('visualization').getBoundingClientRect();
+                        const style = window.getComputedStyle(plant);
                         return {
-                            x: rect.left - containerRect.left + rect.width / 2,
-                            y: rect.top - containerRect.top + rect.height / 2,
+                            x: parseFloat(style.left) + 12.5, // Half of plant width
+                            y: parseFloat(style.top) + 12.5,  // Half of plant height
                             element: plant,
                             row: parseInt(plant.textContent) % numberOfRows,
                             col: Math.floor(parseInt(plant.textContent) / numberOfRows)
@@ -598,19 +611,16 @@
                 startX = e.clientX - currentOffsetX;
                 startY = e.clientY - currentOffsetY;
                 visualization.style.cursor = 'grabbing';
+                e.preventDefault();
             }
             
             function drag(e) {
                 if (!isDragging) return;
-                e.preventDefault();
                 
                 currentOffsetX = e.clientX - startX;
                 currentOffsetY = e.clientY - startY;
                 
-                const plantingArea = document.querySelector('.planting-area');
-                if (plantingArea) {
-                    plantingArea.style.transform = `translate(${currentOffsetX}px, ${currentOffsetY}px) scale(${currentScale})`;
-                }
+                updateTransform();
             }
             
             function stopDragging() {
@@ -639,6 +649,25 @@
                 const plantingArea = document.querySelector('.planting-area');
                 if (plantingArea) {
                     plantingArea.style.transform = `translate(${currentOffsetX}px, ${currentOffsetY}px) scale(${currentScale})`;
+                }
+            }
+            
+            function resetForm() {
+                document.getElementById('triangleForm').reset();
+                resultsContainer.style.display = 'none';
+                visualizationContainer.style.display = 'none';
+            }
+            
+            // Function to navigate back to dashboard
+            function goToDashboard() {
+                // You can replace this with your actual dashboard URL
+                // For demonstration, we'll use a simple alert and history back
+                if (confirm('Return to Dashboard? Any unsaved changes will be lost.')) {
+                    // If this is part of a larger application, you would redirect to the dashboard
+                    // window.location.href = '/dashboard';
+                    
+                    // For this demo, we'll just go back in history
+                    window.history.back();
                 }
             }
             
